@@ -1,7 +1,6 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-
 import os
 import numpy as np
 import tensorflow as tf
@@ -17,16 +16,14 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 # tf.logging.set_verbosity(tf.logging.INFO)
 
-# CNN Model Function
-
+# Convolutional neural net contrusction function
+ # It describes every layer separetly
+ 
 def cnn_model_fn(features, labels, mode):
-
-# Input Layer
+    # Input Layer, standard square 31*31 gray 
     input_layer = tf.reshape(features, [-1, 31, 31, 1])
-
-
-# Convolutional Layer #1
-
+    
+    # Convolutional Layer #1, takes as the input the input_layer, valid padding and the AF is a ReLU
     conv1 = tf.layers.conv2d(
         inputs=input_layer,
         filters=20,
@@ -34,22 +31,20 @@ def cnn_model_fn(features, labels, mode):
         padding="valid",
         activation=tf.nn.relu
     )
-
-# Normalization Layer #1
- #   norm1 = tf.layers.local_response_normalization(
-  #      inputs=conv1,
-   #     depth_radius=5,
-    #    alpha=0.0001,
-    #    beta=0.75
+     
+    # Normalization Layer #1, experimental normalization layer just after the conv layer
+    # norm1 = tf.layers.local_response_normalization(
+    #   inputs=conv1,
+    #   depth_radius=5,
+    #   alpha=0.0001,
+    #   beta=0.75
     #)
 
 
-# Pooling Layer #1
-
+    # Pooling Layer #1, using maxplooling takes as an input the conv1 layer
     pool1 = tf.layers.max_pooling2d(inputs=conv1, pool_size=[2, 2], strides=2)
 
-# Convolutional Layer #2
-
+    # Convolutional Layer #2, takes as an input the output of the maxplooling1, 40 filters
     conv2 = tf.layers.conv2d(
         inputs=pool1,
         filters=40,
@@ -57,16 +52,16 @@ def cnn_model_fn(features, labels, mode):
         padding="valid",
         activation=tf.nn.relu
     )
-
-# Normalization Layer #2
- #   norm2 = tf.layers.local_response_normalization(
-  #      inputs=conv2,
-   #     depth_radius=5,
-    #    alpha=0.0001,
-    #    beta=0.75
+    
+    # Normalization Layer #2
+    # norm2 = tf.layers.local_response_normalization(
+    #   inputs=conv2,
+    #   depth_radius=5,
+    #   alpha=0.0001,
+    #   beta=0.75
     #)
 
-# Pooling Layer #2
+    # Pooling Layer #2
   
     pool2 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2, 2], strides=2)
 
