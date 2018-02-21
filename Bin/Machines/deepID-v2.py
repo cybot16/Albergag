@@ -92,7 +92,7 @@ def cnn_model_fn(features, labels, mode):
     
     # Experimental
     
-    # Concat conv4 and pool3
+     # Concat conv4 and pool3
     # conc = tf.concat(['conv4_flat','pool3_flat'], axis = -1)
     
     # Dense Layer
