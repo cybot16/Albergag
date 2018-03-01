@@ -74,7 +74,6 @@ def cnn_model_fn(features, labels, mode):
     
     # Pooling Layer #3, finaly pooling layer
     pool3 = tf.layers.max_pooling2d(inputs=conv3, pool_size=[2, 2], strides=2)
-
     # Convolutional Layer #4, final convolution layer, the output has 80 in depth
     conv4 = tf.layers.conv2d(
         inputs=pool3,
@@ -89,7 +88,7 @@ def cnn_model_fn(features, labels, mode):
     # Output Tensor Shape: [batch_size, 1 * 2 * 80]
     conv4_flat = tf.reshape(conv4, [-1, 80])
     pool3_flat = tf.reshape(pool3, [-1, 80])
-    
+     
     # Experimental
     
      # Concat conv4 and pool3
@@ -116,45 +115,50 @@ def cnn_model_fn(features, labels, mode):
     train_op = None
 
     # Calculate Loss (for both TRAIN and EVAL modes)
-
     if mode != learn.ModeKeys.INFER:
         onehot_labels = tf.one_hot(indices=tf.cast(labels, tf.int32), depth=10)
         loss = tf.losses.softmax_cross_entropy(
             onehot_labels=onehot_labels,
-            logits=logits
+i            logits=logits
         )
 
-# Configure the Training Op (for TRAIN mode)
-
+    # Configure the Training Op (for TRAIN mode)
     if mode == learn.ModeKeys.TRAIN:
-        train_op = tf.contrib.layers.optimize_loss(
+            train_op = tf.contrib.layers.optimize_loss(
             loss=loss,
             global_step=tf.contrib.framework.get_global_step(),
             learning_rate=0.001,
             optimizer="SGD"
         )
 
-# Generate Predictions
-
+    # Generate Predictions
     predictions = {
         "classes": tf.argmax(
-            input=logits, axis=1),
+                   input=logits, axis=1),
         "probabilities": tf.nn.softmax(
-            logits, name="softmax_tensor")
+                   logits, name="softmax_tensor")
     }
 
-# Return a ModelFnOps object
+    # Return a ModelFnOps object
     return model_fn_lib.ModelFnOps(
-        mode=mode, predictions=predictions, loss=loss, train_op=train_op)
+        mode=mode,
+        predictions=predictions,
+        loss=loss,
+        train_op=train_op)
 
+   
+#Building the classifier based on the model function that we've created above in the cnn_model_fn
 classifier = learn.Estimator(
-        model_fn=cnn_model_fn, model_dir="../Data/Models")
+                   model_fn=cnn_model_fn,
+                   model_dir="../Data/Models"
+                   )
 
 # tensors_to_log = {"probabilities": "softmax_tensor"}
-
 # logging_hook = tf.train.LoggingTensorHook(
-#         tensors=tensors_to_log, every_n_iter=50)
+#                tensors=tensors_to_log, every_n_iter=50)
 
+
+# Defining the Training function that will fit the model by using the classifier that we made
 def Training():
     print("[+] Welcome to the training program.")
     X, Y = LoadData()
@@ -172,31 +176,29 @@ def Training():
     # print("[+] till now working")
     # Configure the accuracy metric for evaluation
     metrics = {
-        "accuracy":
-            learn.MetricSpec(
-                metric_fn=tf.metrics.accuracy, prediction_key="classes"),
-    }
+        "accuracy": learn.MetricSpec(
+                          metric_fn=tf.metrics.accuracy,
+                          prediction_key="classes"),
+                  }
 
     # Evaluate the model and print results
     eval_results = classifier.evaluate(
-        x=eval_data, y=eval_labels, metrics=metrics)
+                              x=eval_data,
+                              y=eval_labels,
+                              metrics=metrics
+                  )
     print(eval_results)
 
-# def maxim(ma):
-#     r = 0
-#     v = -1
-#     for i, p in enumerate(ma):
-        
-    # return r
 
+# The function that will use the trained model to predict the labels    
 def Solver(Input):
     global classifier
     os.chdir('Bin')
     # predictions = classifier.predict(x=Input, as_iterable=True)
     for i, p in enumerate(predictions):
-        # print (i, p)
         return p['classes']
-    # return predictions['classes']
+     
+# In case of wrong classification, the intervenience of the human oracle to correct the labeling     
 def Correction(Input):
     global classifier
     X_train = np.empty((15,31,31),dtype=np.float32)
@@ -206,7 +208,6 @@ def Correction(Input):
         X_train[i] = Input
         Y_train[i] = cor  
     classifier.fit(x=X_train, y=Y_train, batch_size=7, steps=3000, monitors=[logging_hook])
-__all__ = ["Training","Solver","Correction"]
 
-# if __name__ == "__main__":
-#     Training()
+    
+__all__ = ["Training","Solver","Correction"]
