@@ -119,7 +119,7 @@ def cnn_model_fn(features, labels, mode):
         onehot_labels = tf.one_hot(indices=tf.cast(labels, tf.int32), depth=10)
         loss = tf.losses.softmax_cross_entropy(
             onehot_labels=onehot_labels,
-i            logits=logits
+            logits=logits
         )
 
     # Configure the Training Op (for TRAIN mode)
