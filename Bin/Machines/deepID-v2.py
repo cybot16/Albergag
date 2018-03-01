@@ -60,8 +60,7 @@ def cnn_model_fn(features, labels, mode):
     #   beta=0.75
     #)
  
-    # Pooling Layer #2, takes as an input the output of the 2nd convonlutional layer 
-    pool2 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2, 2], strides=2)
+    # Pooling Layer #2, takes as an input the output of the 2nd convonlutional layer     pool2 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2, 2], strides=2)
 
     # Convolutional Layer #3, takes as the input the output of the 2nd max_pooling layer, augumenting the dimensions to 60
     conv3 = tf.layers.conv2d(
@@ -91,7 +90,7 @@ def cnn_model_fn(features, labels, mode):
      
     # Experimental
     
-     # Concat conv4 and pool3
+    # Concat conv4 and pool3
     # conc = tf.concat(['conv4_flat','pool3_flat'], axis = -1)
     
     # Dense Layer
